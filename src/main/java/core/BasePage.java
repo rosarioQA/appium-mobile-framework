@@ -5,6 +5,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.remote.RemoteWebElement;
+import java.util.Map;
 
 public abstract class BasePage {
 
@@ -17,15 +19,19 @@ public abstract class BasePage {
     }
 
     protected WebElement find(By locator) {
-        return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(locator)
-        );
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    protected void click(By locator) {
-        wait.until(
-                ExpectedConditions.elementToBeClickable(locator)
-        ).click();
+    public void click(By locator) {
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+    }
+
+    public void doubleClick(WebElement element) {
+        assert ((RemoteWebElement) element).getId() != null;
+        driver.executeScript(
+                "mobile: doubleClickGesture",
+                Map.of("elementId", ((RemoteWebElement) element).getId())
+        );
     }
 
     protected void type(By locator, String text) {

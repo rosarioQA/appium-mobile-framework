@@ -1,42 +1,31 @@
 package steps;
 
-import io.cucumber.java.en.Given;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import pages.ClockMenuPage;
-import pages.AlarmPage;
+import pages.ClockPage;
+import pages.MenuPage;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClockSteps {
-    private final ClockMenuPage clockPage = new ClockMenuPage();
-    private final AlarmPage alarmPage = new AlarmPage();
+    private final MenuPage menuPage = new MenuPage();
+    private final ClockPage clockPage = new ClockPage();
 
-    @Given("Clock application is open")
-    public void clockApplicationIsOpen() {
-        assertTrue(clockPage.isOpened());
-    }
-
-    @When("I open the Alarm tab")
-    public void openAlarmTab() {
-        clockPage.openAlarmTab();
-    }
-
-    @When("Add new alarm")
-    public void createNewAlarm() {
-        alarmPage.tapAddAlarm();
-        alarmPage.selectHour(8);
-        alarmPage.selectMinute(10);
-        alarmPage.saveAlarm();
-    }
-
-    @Then("the Alarm screen is displayed")
+    @Then("the Clock screen is displayed")
     public void alarmScreenDisplayed() {
-        assertTrue(alarmPage.isAddAlarmButtonDisplayed());
+        assertTrue(menuPage.isTitleDisplayed("Clock"));
     }
 
-    @Then("the Alarm is added")
-    public void alarmAdded() {
-        assertEquals( "8:10", alarmPage.getLastAlarmTime());
+    @And("Add {string} to the list of timezones")
+    public void addNewTimezone(String timezone) throws InterruptedException {
+        clockPage.tapAddTimezone();
+        clockPage.searchTimezone(timezone);
+        clockPage.selectResultByPosition(0);
+    }
+
+    @Then("the timezone {string} is displayed")
+    public void theTimezoneIsAdded(String timezone) {
+        assertEquals(timezone, clockPage.getLastAddedTimezone());
     }
 }

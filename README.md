@@ -41,9 +41,10 @@ Automatizar pruebas funcionales sobre aplicaciones Android siguiendo buenas prá
 src
 ├── main
 │   └── java
+│       ├── config
 │       ├── core
-│       ├── pages
-│       └── utils
+│       ├── driver
+│       └── pages
 │
 └── test
     ├── java
@@ -109,13 +110,13 @@ mvn test
 Ejecutar por tags
 
 ```bash
-mvn test -Dcucumber.filter.tags="@Smoke"
+mvn clean test -Dcucumber.filter.tags="@tier1"
 ```
 
 Ejecutar múltiples tags
 
 ```bash
-mvn test -Dcucumber.filter.tags="@Smoke or @Regression"
+mvn test -Dcucumber.filter.tags="@smoke or @regression"
 ```
 
 ---
@@ -146,16 +147,6 @@ DriverFactory
 
 ---
 
-## Buenas prácticas
-
-- No utilizar Thread.sleep()
-- Utilizar waits explícitos
-- Centralizar locators
-- Mantener Page Objects pequeños
-- Una responsabilidad por clase
-
----
-
 ## Autor
 
-Rosario Segovia
+Rosario
