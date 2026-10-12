@@ -1,60 +1,74 @@
 package pages;
+
 import core.BasePage;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
-import java.util.Objects;
 
 public class AlarmPage extends BasePage {
 
     private final By addAlarmButton = AppiumBy.id("com.google.android.deskclock:id/fab");
-    private final By alarmList = By.id("com.google.android.deskclock:id/alarm_recycler_view");
-    private final By saveAlarmButton = By.id("com.google.android.deskclock:id/material_timepicker_ok_button");
-    private final By alarmCards = By.className("androidx.cardview.widget.CardView");
-    public final By alarmTime = AppiumBy.id("com.google.android.deskclock:id/digital_clock");
+    private final By alarmList = AppiumBy.id("com.google.android.deskclock:id/alarm_recycler_view");
+    private final By alarmCard = AppiumBy.className("androidx.cardview.widget.CardView");
+    private final By alarmTimeLabel = AppiumBy.id("com.google.android.deskclock:id/digital_clock");
+    private final By expandAlarmButton = AppiumBy.className("android.widget.ImageButton");
+    private final By deleteAlarmButton = AppiumBy.androidUIAutomator(
+            "new UiSelector().className(\"android.widget.Button\").text(\"Delete\")");
 
-    public final By expandAlarmButton = AppiumBy.className("android.widget.ImageButton");
-    public final By deleteAlarmButton = AppiumBy.androidUIAutomator(
-            "new UiSelector()"
-                    + ".className(\"android.widget.Button\")"
-                    + ".text(\"Delete\")"
-    );
-    public final By AMButton = AppiumBy.id("com.google.android.deskclock:id/material_clock_period_am_button");
-    public final By PMButton = AppiumBy.id("com.google.android.deskclock:id/material_clock_period_pm_button");
-
+    private final By saveAlarmButton = AppiumBy.id("com.google.android.deskclock:id/material_timepicker_ok_button");
+    private final By amButton = AppiumBy.id("com.google.android.deskclock:id/material_clock_period_am_button");
+    private final By pmButton = AppiumBy.id("com.google.android.deskclock:id/material_clock_period_pm_button");
 
     public AlarmPage() {
         super();
-    }
-
-    public String[] splitTime(String time) {
-        return time.replace(":", " ").split(" ");
     }
 
     public void tapAddAlarm() {
         click(addAlarmButton);
     }
 
+    public boolean isAddAlarmButtonDisplayed() {
+        return isDisplayed(addAlarmButton);
+    }
+
+    public void selectHour(String hour) {
+        click(AppiumBy.accessibilityId(hour + " o'clock"));
+    }
+
+    public void selectMinutes(String minutes) {
+        click(AppiumBy.accessibilityId(minutes + " minutes"));
+    }
+
+    public void setBeforeOrAfterNoon(String period) {
+        click("AM".equalsIgnoreCase(period) ? amButton : pmButton);
+    }
+
     public void saveAlarm() {
         click(saveAlarmButton);
     }
 
-    public boolean isAddAlarmButtonDisplayed() {
-        return isDisplayed(alarmList);
+    public int getAlarmCount() {
+        return getAlarms().size();
     }
 
-    public void selectHour(String hour) {
-        By hourLocator = AppiumBy.accessibilityId(hour + " o'clock");
-        waitUntilVisible(hourLocator);
-        click(hourLocator);
+    public String getAlarmTimeByPosition(String position) {
+        String time = getAlarmByPosition(position).findElement(alarmTimeLabel).getText();
+        return normalizeText(time);
     }
 
-    public void selectMinutes(String minute) {
-        By hourLocator = AppiumBy.accessibilityId(minute + " minutes");
-        waitUntilVisible(hourLocator);
-        click(hourLocator);
+    public void openAlarmTimeByPosition(String position) {
+        getAlarmByPosition(position).findElement(alarmTimeLabel).click();
+    }
+
+    public void deleteAlarmByPosition(String position) {
+        getAlarmByPosition(position).findElement(expandAlarmButton).click();
+        click(deleteAlarmButton);
+    }
+
+    public String[] splitTime(String time) {
+        return time.replace(":", " ").split(" ");
     }
 
     public String normalizeText(String text) {
@@ -63,47 +77,18 @@ public class AlarmPage extends BasePage {
                 .replaceAll("\\p{Z}+", " ");
     }
 
-    public String getAlarmTimeByPosition(String time) {
-        var timeDisplayed =  getAlarmByPosition(time).findElement(alarmTime).getText();
-        return normalizeText(timeDisplayed);
+    private List<WebElement> getAlarms() {
+        return find(alarmList).findElements(alarmCard);
     }
 
-    public int getAlarmCount() {
-        WebElement recycler = driver.findElement(alarmList);
-        List<WebElement> cards = recycler.findElements(alarmCards);
-        return cards.size() ;
-    }
-
-    public WebElement getAlarmByPosition(String position) {
-        WebElement recycler = driver.findElement(alarmList);
-        List<WebElement> cards = recycler.findElements(alarmCards);
+    private WebElement getAlarmByPosition(String position) {
+        List<WebElement> alarms = getAlarms();
         int index = switch (position.toLowerCase()) {
             case "first" -> 0;
             case "second" -> 1;
-            case "last" -> cards.size() - 1;
+            case "last" -> alarms.size() - 1;
             default -> throw new IllegalArgumentException("Invalid alarm position: " + position);
         };
-        return cards.get(index);
-    }
-
-    public WebElement getLastAlarm() {
-        WebElement recycler = driver.findElement(alarmList);
-        List<WebElement> cards = recycler.findElements(alarmCards);
-        return  cards.get(cards.size() - 1);
-    }
-
-
-
-    public void deleteAlarm() {
-        waitUntilVisible(deleteAlarmButton);
-        click(deleteAlarmButton);
-    }
-
-    public void setBeforeOrAfterNoon(String clock) {
-        if (Objects.equals(clock, "AM")) {
-            click(AMButton);
-        } else {
-            click(PMButton);
-        }
+        return alarms.get(index);
     }
 }

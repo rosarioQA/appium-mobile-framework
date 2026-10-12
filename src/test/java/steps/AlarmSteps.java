@@ -40,8 +40,7 @@ public class AlarmSteps {
 
     @And("I delete the last alarm")
     public void deleteAlarm() {
-        alarmPage.getLastAlarm().findElement(alarmPage.expandAlarmButton).click();
-        alarmPage.deleteAlarm();
+        alarmPage.deleteAlarmByPosition("last");
     }
 
     @And("^the Alarm tab displays (\\d+) alarm(s)?$")
@@ -51,8 +50,8 @@ public class AlarmSteps {
     }
 
     @And("I set the {string} alarm to {string}")
-    public void setTheFirstAlarmWith(String position, String newTime) throws InterruptedException {
-        alarmPage.getAlarmByPosition(position).findElement(alarmPage.alarmTime).click();
+    public void setTheFirstAlarmWith(String position, String newTime) {
+        alarmPage.openAlarmTimeByPosition(position);
         String[] result = alarmPage.splitTime(newTime);
         alarmPage.selectHour(result[0]);
         alarmPage.selectMinutes(result[1]);

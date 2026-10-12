@@ -1,3 +1,4 @@
+@initial
 Feature: First Test Feature
 
   Scenario: Start an Appium session

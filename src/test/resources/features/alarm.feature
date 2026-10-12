@@ -6,7 +6,7 @@ Feature: Alarm
 
   Rule: User can access the Alarm screen
 
-    @tier1
+    @tier1 @initial
     Scenario: Open Alarm tab
       When I open the Alarm tab
       Then the Alarm screen is displayed

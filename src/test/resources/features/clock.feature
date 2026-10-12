@@ -12,8 +12,8 @@ Feature: clock
   @addTimezone
   Scenario: Add a new timezone
     When I open the Clock tab
-    And Add "Argentina" to the list of timezones
-    Then the timezone "Argentina" is displayed
+    And Add "Buenos Aires" to the list of timezones
+    Then the timezone "Buenos Aires" is displayed
 
   #@test2
   #Scenario: Delete a timezone
